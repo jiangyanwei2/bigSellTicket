@@ -19,7 +19,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
+from selenium.webdriver.common.by import By
 
 def save_cookies(login_cookies):
     """ 保存cookies """
@@ -93,18 +93,18 @@ def account_login(login_type: str, login_id=None, login_password=None):
     if platform.system().lower() == 'linux':
         chromedriver = os.path.join(os.getcwd(), 'chromedriver_linux')
     elif platform.system().lower() == 'windows':
-        chromedriver = os.path.join(os.getcwd(), 'chromedriver_windows')
+        chromedriver = 'C:\\MyProgram\\chromedriver_win32\\chromedriver.exe'
     else:
         chromedriver = os.path.join(os.getcwd(), 'chromedriver_mac')
 
-    driver = webdriver.Chrome(chromedriver, options=option)
+    driver = webdriver.Chrome(options=option)
     driver.set_page_load_timeout(60)
     driver.get(login_url)
     if login_type == 'account':
         driver.switch_to.frame('alibaba-login-box')  # 切换内置frame，否则会找不到元素位置
-        driver.find_element_by_name('fm-login-id').send_keys(login_id)
-        driver.find_element_by_name('fm-login-password').send_keys(login_password)
-        driver.find_element_by_class_name('password-login').send_keys(Keys.ENTER)
+        driver.find_element(By.NAME, 'fm-login-id').send_keys(login_id)
+        driver.find_element(By.NAME, 'fm-login-password').send_keys(login_password)
+        driver.find_element(By.CLASS_NAME, 'password-login').send_keys(Keys.ENTER)
     WebDriverWait(driver, 180, 0.5).until(EC.title_contains(damai_title))
 
     login_cookies = {}
@@ -130,8 +130,8 @@ def get_api_param():
     js_code_define = requests.get(
         "https://g.alicdn.com/damai/??/vue-pc/0.0.70/vendor.js,vue-pc/0.0.70/perform/perform.js").text
     # 获取商品SKU的API参数
-    commodity_param = re.search('getSkuData:function.*?\|\|""}}', js_code_define).group()
-    commodity_param = re.search('data:{.*?\|\|""}}', commodity_param).group()
+    commodity_param = re.search(r'getSkuData:function.*?\|\|""}}', js_code_define).group()
+    commodity_param = re.search(r'data:{.*?\|\|""}}', commodity_param).group()
     commodity_param = commodity_param.replace('data:{', ''). \
         replace('this.vmSkuData.privilegeId||""}}', '""'). \
         replace('itemId:e', 'itemId:""')

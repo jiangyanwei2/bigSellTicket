@@ -100,7 +100,7 @@ class DaMaiTicket:
 
         response = self.session.get('https://buy.damai.cn/orderConfirm', headers=headers,
                                     params=params, cookies=self.login_cookies)
-        result = re.search('window.__INIT_DATA__[\s\S]*?};', response.text)
+        result = re.search('window.__INIT_DATA__[\\s\\S]*?};', response.text)
         self.login_cookies.update(self.session.cookies)
         try:
             submit_order_info = json.loads(result.group().replace('window.__INIT_DATA__ = ', '')[:-1])
@@ -147,7 +147,7 @@ class DaMaiTicket:
         response = requests.get('https://buy.damai.cn/orderConfirm', params=params, cookies=self.login_cookies,
                                 headers=headers)
         if response.status_code == 200:
-            result = re.search('window.__INIT_DATA__[\s\S]*?};', response.text)
+            result = re.search(r'window.__INIT_DATA__[\s\S]*?};', response.text)
             self.login_cookies.update(self.session.cookies)
             try:
                 submit_order_info = json.loads(result.group().replace('window.__INIT_DATA__ = ', '')[:-1])
